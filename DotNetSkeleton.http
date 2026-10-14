@@ -1,0 +1,6 @@
+@DotNetSkeleton_HostAddress = http://localhost:5213
+
+GET {{DotNetSkeleton_HostAddress}}/weatherforecast/
+Accept: application/json
+
+###
