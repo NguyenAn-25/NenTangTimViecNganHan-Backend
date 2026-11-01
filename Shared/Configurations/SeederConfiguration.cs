@@ -5,17 +5,11 @@ public static class SeederExtensions
 {
     public static IServiceCollection AddSeeders(this IServiceCollection services)
     {
-        // Tự động quét và đăng ký tất cả class implement ISeeder
-        var seederTypes = typeof(ISeeder).Assembly
-            .GetTypes()
-            .Where(t => typeof(ISeeder).IsAssignableFrom(t)
-                        && t is { IsClass: true, IsAbstract: false });
-
-        foreach (var type in seederTypes)
-        {
-            services.AddScoped(typeof(ISeeder), type);
-        }
-
+        // This auth flow seeds only the six auth/permission entities in scope.
+        services.AddScoped<ISeeder, AuthPermissionCatalogSeeder>();
+        services.AddScoped<ISeeder, AuthDevelopmentAdminSeeder>();
+        services.AddScoped<ISeeder, AuthDevelopmentAdminAccountsSeeder>();
+        services.AddScoped<ISeeder, AuthDevelopmentSampleDataSeeder>();
         services.AddScoped<DatabaseSeeder>();
 
         return services;

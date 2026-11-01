@@ -44,7 +44,7 @@ public class DatabaseSeeder
                 if (count == 0)
                 {
                     if (_logger.IsEnabled(LogLevel.Information))
-                        _logger.LogInformation("⏭️ {Seeder}: data already exists, skipped", name);
+                        _logger.LogInformation("⏭️ {Seeder}: no records added", name);
                 }
                 else
                 {

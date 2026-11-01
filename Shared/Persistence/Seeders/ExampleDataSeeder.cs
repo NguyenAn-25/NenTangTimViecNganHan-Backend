@@ -3,7 +3,7 @@ namespace DotNetSkeleton.Shared.Persistence.Seeders;
 using DotNetSkeleton.Modules.ExampleModule.Entities;
 using Microsoft.EntityFrameworkCore;
 
-public class ExampleSeeder : ISeeder
+public class ExampleDataSeeder : ISeeder
 {
     public int Order => 1;
 

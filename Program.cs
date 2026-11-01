@@ -2,13 +2,16 @@ using Microsoft.EntityFrameworkCore;
 using Npgsql;
 using DotNetSkeleton.Shared.Configurations;
 using DotNetSkeleton.Shared.Extensions;
+using DotNetSkeleton.Shared.Api;
+using DotNetSkeleton.Modules.AuthModule.Extensions;
 
 var builder = WebApplication.CreateBuilder(args);
 
 // Add services to the container.
 // Learn more about configuring Swagger/OpenAPI at https://aka.ms/aspnetcore/swashbuckle
-builder.Services.AddControllers();
+builder.Services.AddAuthModule(builder.Configuration, builder.Environment);
 builder.Services
+    .AddSharedApi()
     .AddSwaggerDocs()
     .AddDatabase(builder.Configuration);
 
@@ -18,10 +21,16 @@ builder.Services.AddApplicationServices();
 
 var app = builder.Build();
 
+app.UseExceptionHandler();
+
 //config swagger
 app.UseSwaggerDocs();
 
 app.UseHttpsRedirection();
+app.UseRouting();
+app.UseRateLimiter();
+app.UseAuthentication();
+app.UseAuthorization();
 
 app.MapControllers();
 
@@ -31,24 +40,17 @@ if (app.Environment.IsDevelopment())
     await app.SeedDatabaseAsync();
 }
 
-app.MapGet("/", async (IConfiguration config) =>
+app.MapGet("/", (HttpContext context) =>
 {
-    return Results.Ok("Chào, tôi là dotnet");
+    return Results.Ok(ApiResponse<string>.Succeed("Chào, tôi là dotnet", traceId: context.TraceIdentifier));
 });
 
-app.MapGet("/test-db", async (IConfiguration config) =>
+app.MapGet("/test-db", async (HttpContext context, IConfiguration config) =>
 {
     var connectionString = config.GetConnectionString("Default");
-    try
-    {
-        await using var conn = new NpgsqlConnection(connectionString);
-        await conn.OpenAsync();
-        return Results.Ok("Kết nối Postgres thành công!");
-    }
-    catch (Exception ex)
-    {
-        return Results.Problem($"Lỗi: {ex.GetType().Name} - {ex.Message}");
-    }
+    await using var conn = new NpgsqlConnection(connectionString);
+    await conn.OpenAsync(context.RequestAborted);
+    return Results.Ok(ApiResponse<string>.Succeed("Kết nối Postgres thành công!", traceId: context.TraceIdentifier));
 });
 
 app.Run();

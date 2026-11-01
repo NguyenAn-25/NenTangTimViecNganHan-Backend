@@ -1,8 +1,6 @@
 using DotNetSkeleton.Modules.ExampleModule;
 using DotNetSkeleton.Modules.ExampleModule.Validators;
 using FluentValidation;
-using Microsoft.EntityFrameworkCore;
-using SharpGrip.FluentValidation.AutoValidation.Mvc.Extensions;
 
 namespace DotNetSkeleton.Shared.Extensions;
 
@@ -19,9 +17,6 @@ public static class DependencyInjection
 
         // Đăng ký toàn bộ Validator trong Assembly hiện tại (tự động scan toàn bộ validator)
         services.AddValidatorsFromAssemblyContaining<CreateExampleDtoValidator>();
-
-        // Cấu hình tự động validate
-        services.AddFluentValidationAutoValidation();
 
         return services;
     }
